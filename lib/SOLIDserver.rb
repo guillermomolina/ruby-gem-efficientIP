@@ -270,7 +270,7 @@ module SOLIDserver
     #   method : called method name
     #   args : called method arguments
     def method_missing(method, *args)
-      if (service =  method.to_s.match(/^(ip|vlm|dns)_(site|subnet6?|pool6?|address6?|alias6?|domain|range|vlan|server|view|zone|rr)_(add|update|info|list|delete|count)$/))
+      if (service =  method.to_s.match(/^(ip|vlm|dns)_(site|subnet6?|pool6?|address6?|alias6?|domain|range|vlan|server|view|zone|rr)_(add|update|info|list|delete|count|find_fre)$/))
         r_module, r_object, r_action = service.captures
 
         if (@servicemapper.has_key?(service.to_s))
