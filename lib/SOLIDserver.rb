@@ -126,7 +126,8 @@ module SOLIDserver
         'vlm_vlan_count' => ['vlmvlan_count', 'This service returns the number of VLANs matching optional condition(s).'],
         'vlm_vlan_list' => ['vlmvlan_list', 'This service returns a list of VLANs matching optional condition(s).'],
         'vlm_vlan_info' => ['vlmvlan_info', 'This service returns information about a specific VLAN.'],
-        'vlm_vlan_delete' => ['vlm_vlan_delete', 'This service allows to delete a specific VLAN.']
+        'vlm_vlan_delete' => ['vlm_vlan_delete', 'This service allows to delete a specific VLAN.'],
+        'dhcp_lease_list' => ['dhcp_range_lease_list', 'This service returns a list of DHCP leases.']
       }
     end
 
@@ -270,7 +271,11 @@ module SOLIDserver
     #   method : called method name
     #   args : called method arguments
     def method_missing(method, *args)
+<<<<<<< HEAD
       if (service =  method.to_s.match(/^(ip|vlm|dns)_(site|subnet6?|pool6?|address6?|alias6?|domain|range|vlan|server|view|zone|rr)_(add|update|info|list|delete|count|find_fre)$/))
+=======
+      if (service =  method.to_s.match(/^(ip|vlm|dns|dhcp)_(site|subnet6?|pool6?|address6?|alias6?|domain|range|vlan|server|view|zone|rr|lease)_(add|update|info|list|delete|count|find_free)$/))
+>>>>>>> Added basic DHCP Lease capabilities to script for Foreman Project
         r_module, r_object, r_action = service.captures
 
         if (@servicemapper.has_key?(service.to_s))
