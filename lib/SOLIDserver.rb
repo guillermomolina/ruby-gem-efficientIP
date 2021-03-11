@@ -272,10 +272,14 @@ module SOLIDserver
     #   args : called method arguments
     def method_missing(method, *args)
 <<<<<<< HEAD
+<<<<<<< HEAD
       if (service =  method.to_s.match(/^(ip|vlm|dns)_(site|subnet6?|pool6?|address6?|alias6?|domain|range|vlan|server|view|zone|rr)_(add|update|info|list|delete|count|find_fre)$/))
 =======
       if (service =  method.to_s.match(/^(ip|vlm|dns|dhcp)_(site|subnet6?|pool6?|address6?|alias6?|domain|range|vlan|server|view|zone|rr|lease)_(add|update|info|list|delete|count|find_free)$/))
 >>>>>>> Added basic DHCP Lease capabilities to script for Foreman Project
+=======
+      if (service =  method.to_s.match(/^(ip|vlm|dns|dhcp)_(site|subnet6?|pool6?|address6?|alias6?|domain|range|vlan|server|view|zone|rr|lease)_(add|update|info|list|delete|count|find_free)$/))
+>>>>>>> 08415072db2dcc8640d1e7f1dd37efb904f34eda
         r_module, r_object, r_action = service.captures
 
         if (@servicemapper.has_key?(service.to_s))
