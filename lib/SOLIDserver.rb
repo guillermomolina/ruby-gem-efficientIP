@@ -1,7 +1,7 @@
 require 'rest-client'
 require 'base64'
 require 'json'
-require 'erb'
+require 'logger'
 
 # Extend Net::HTTPHeader to comply with case sensitive headers
 module Net::HTTPHeader
@@ -29,6 +29,7 @@ module SOLIDserver
     @username = ''
     @password = ''
     @servicemapper = {}
+    @logger = nil
 
     # Inspector (Hide Sensitive Information)
     def inspect()
@@ -43,13 +44,14 @@ module SOLIDserver
     #   port : Listening http port (default 443)
     #   sslcheck : Verify SSL certificat (default false)
     #   timeout  : HTTP query timeout (default 8)
-    def initialize(host, username, password, port=443, sslcheck=false, timeout=8)
+    def initialize(host, username, password, port: 443, sslcheck: false, timeout: 8, logger: nil)
       @resturl  = sprintf('https://%s:%d/rest', host, port)
       @rpcurl   = sprintf('https://%s:%d/rpc', host, port)
       @timeout  = timeout
       @sslcheck = sslcheck
       @username = Base64.strict_encode64(username)
       @password = Base64.strict_encode64(password)
+      @logger = logger || Logger.new(STDOUT)
 
       # Map the new naming convention against the old one
       #FIXME# Filtering json hash content can be done this way
@@ -127,7 +129,9 @@ module SOLIDserver
         'vlm_vlan_list' => ['vlmvlan_list', 'This service returns a list of VLANs matching optional condition(s).'],
         'vlm_vlan_info' => ['vlmvlan_info', 'This service returns information about a specific VLAN.'],
         'vlm_vlan_delete' => ['vlm_vlan_delete', 'This service allows to delete a specific VLAN.'],
-        'dhcp_lease_list' => ['dhcp_range_lease_list', 'This service returns a list of DHCP leases.']
+        'dhcp_lease_list' => ['dhcp_range_lease_list', 'This service returns a list of DHCP leases.'],
+        'dhcp_static_list' => ['dhcp_static_list', 'This service allows to list the objects.'],
+        'dhcp_option_add' => ['dhcp_option_add', 'This service allows to add/edit/delete a DHCP option.']        
       }
     end
 
@@ -235,6 +239,7 @@ module SOLIDserver
     # Programming Tips :
     #   * https://www.toptal.com/ruby/ruby-metaprogramming-cooler-than-it-sounds
     def call(rest_method, rest_service, args={})
+      @logger.debug("Calling : #{rest_service} with args #{args.to_s}")
       rest_args = ''
 
       args.each do |arg|
@@ -243,11 +248,14 @@ module SOLIDserver
             key = key.to_s.upcase()
           end
 
-          rest_args += key.to_s + '=' + ERB::Util.url_encode(value.to_s) + '&'
+          # rest_args += key.to_s + '=' + ERB::Util.url_encode(value.to_s) + '&'
+          rest_args += key.to_s + '=' + RestClient::Utils.escape(value.to_s) + '&'
         end
       end
 
       begin
+        url = sprintf('%s/%s?', (rest_service.match(/find_free/) ? @rpcurl : @resturl), rest_service) + rest_args
+        @logger.debug("request : #{url}")
         rest_answer = RestClient::Request.execute(
           url: sprintf('%s/%s?', (rest_service.match(/find_free/) ? @rpcurl : @resturl), rest_service) + rest_args,
           accept: 'application/json',
@@ -260,6 +268,7 @@ module SOLIDserver
           }
         )
 
+        @logger.debug("answer : #{rest_answer.to_s}")
         return(rest_answer)
       rescue RestClient::ExceptionWithResponse => rest_error
         raise SOLIDserverError.new("SOLIDserver REST call error : #{rest_error.message}")
@@ -272,7 +281,7 @@ module SOLIDserver
     #   args : called method arguments
     def method_missing(method, *args)
 
-      if (service =  method.to_s.match(/^(ip|vlm|dns|dhcp)_(site|subnet6?|pool6?|address6?|alias6?|domain|range|vlan|server|view|zone|rr|lease)_(add|update|info|list|delete|count|find_free)$/))
+      if (service =  method.to_s.match(/^(ip|vlm|dns|dhcp)_(site|subnet6?|pool6?|address6?|alias6?|domain|range|vlan|server|view|zone|rr|lease|static|option)_(add|update|info|list|delete|count|find_free)$/))
         r_module, r_object, r_action = service.captures
 
         if (@servicemapper.has_key?(service.to_s))
