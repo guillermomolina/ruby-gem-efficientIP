@@ -248,8 +248,10 @@ module SOLIDserver
             key = key.to_s.upcase()
           end
 
-          # rest_args += key.to_s + '=' + ERB::Util.url_encode(value.to_s) + '&'
-          rest_args += key.to_s + '=' + RestClient::Utils.escape(value.to_s) + '&'
+          unless rest_args.empty?
+            rest_args += '&'
+          end
+          rest_args += key.to_s + '=' + RestClient::Utils.escape(value.to_s)
         end
       end
 
