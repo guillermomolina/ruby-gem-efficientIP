@@ -273,6 +273,7 @@ module SOLIDserver
         @logger.debug("answer : #{rest_answer.to_s}")
         return(rest_answer)
       rescue RestClient::ExceptionWithResponse => rest_error
+        @logger.error("answer: #{rest_error.response.to_s}")
         raise SOLIDserverError.new("SOLIDserver REST call error : #{rest_error.message}")
       end
     end
