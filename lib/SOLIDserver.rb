@@ -244,6 +244,8 @@ module SOLIDserver
 
       args.each do |arg|
         args[0].each do |key, value|
+          next if value.nil? || value.to_s.empty?
+
           if (key.to_s == 'where' || key.to_s == 'orderby')
             key = key.to_s.upcase()
           end
