@@ -131,7 +131,8 @@ module SOLIDserver
         'vlm_vlan_delete' => ['vlm_vlan_delete', 'This service allows to delete a specific VLAN.'],
         'dhcp_lease_list' => ['dhcp_range_lease_list', 'This service returns a list of DHCP leases.'],
         'dhcp_static_list' => ['dhcp_static_list', 'This service allows to list the objects.'],
-        'dhcp_option_add' => ['dhcp_option_add', 'This service allows to add/edit/delete a DHCP option.']        
+        'dhcp_option_add' => ['dhcp_option_add', 'This service allows to add/edit/delete a DHCP option.'],
+        'dns_zone_list' => ['dns_zone_list', 'This service allows to list the DNS zones.']
       }
     end
 
@@ -286,7 +287,7 @@ module SOLIDserver
     #   args : called method arguments
     def method_missing(method, *args)
 
-      if (service =  method.to_s.match(/^(ip|vlm|dns|dhcp)_(site|subnet6?|pool6?|address6?|alias6?|domain|range|vlan|server|view|zone|rr|lease|static|option)_(add|update|info|list|delete|count|find_free)$/))
+      if (service =  method.to_s.match(/^(ip|vlm|dns|dhcp)_(site|subnet6?|pool6?|address6?|alias6?|domain|range|vlan|server|view|zone|rr|lease|static|option|zone)_(add|update|info|list|delete|count|find_free)$/))
         r_module, r_object, r_action = service.captures
 
         if (@servicemapper.has_key?(service.to_s))
