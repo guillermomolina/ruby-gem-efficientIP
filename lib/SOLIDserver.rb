@@ -133,8 +133,9 @@ module SOLIDserver
         'dhcp_static_list' => ['dhcp_static_list', 'This service allows to list the objects.'],
         'dhcp_option_add' => ['dhcp_option_add', 'This service allows to add/edit/delete a DHCP option.'],
         'dns_zone_list' => ['dns_zone_list', 'This service allows to list the DNS zones.'],
+        'dns_rr_list' => ['dns_rr_list', 'This service allows to add a resource record or edit an existing one.'],
         'dns_rr_add' => ['dns_rr_add', 'This service allows to add a resource record or edit an existing one.'],
-        'dns_rr_delete' => ['dns_rr_delete', 'This service allows to delete a resource record.']
+        'dns_rr_delete' => ['dns_rr_delete', 'This service allows to list the resource records.']
       }
     end
 
